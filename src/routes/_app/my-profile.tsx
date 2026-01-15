@@ -1,0 +1,34 @@
+/**
+ * _app/profile.tsx - 프로필 페이지
+ *
+ * URL: /profile (_app은 URL에 포함되지 않음)
+ * 레이아웃: _app.tsx의 AppLayout이 적용됨
+ */
+
+import { createFileRoute } from '@tanstack/react-router'
+
+export const Route = createFileRoute('/_app/my-profile')({
+  component: Profile,
+})
+
+function Profile() {
+  return (
+    <div>
+      <h1 className="text-3xl font-bold text-white mb-6">Profile</h1>
+      <div className="bg-slate-800 rounded-lg p-6 border border-slate-700 max-w-md">
+        <div className="flex items-center gap-4 mb-4">
+          <div className="w-16 h-16 bg-cyan-500 rounded-full flex items-center justify-center text-2xl">
+            👤
+          </div>
+          <div>
+            <div className="text-white font-semibold">John Doe</div>
+            <div className="text-gray-400 text-sm">john@example.com</div>
+          </div>
+        </div>
+        <button className="w-full bg-cyan-500 hover:bg-cyan-600 text-white py-2 rounded-lg transition-colors">
+          Edit Profile
+        </button>
+      </div>
+    </div>
+  )
+}
