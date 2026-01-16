@@ -1,13 +1,13 @@
 /**
- * _app/profile.tsx - 프로필 페이지
+ * (app)/my-profile.tsx - 프로필 페이지
  *
- * URL: /profile (_app은 URL에 포함되지 않음)
- * 레이아웃: _app.tsx의 AppLayout이 적용됨
+ * URL: /my-profile
+ * 레이아웃: (app)/_layout.tsx가 적용됨
  */
 
 import { createFileRoute } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/_app/my-profile')({
+export const Route = createFileRoute('/(app)/my-profile')({
   component: Profile,
 })
 

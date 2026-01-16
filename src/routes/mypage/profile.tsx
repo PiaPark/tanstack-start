@@ -1,8 +1,8 @@
 /**
- * _mypage/profile.tsx - 내 프로필 페이지
+ * mypage/profile.tsx - 내 프로필 페이지
  *
  * URL: /mypage/profile
- * 레이아웃: _mypage.tsx의 MypageLayout이 적용됨
+ * 레이아웃: mypage/_layout.tsx가 적용됨
  *
  * 데이터 갱신 흐름:
  * 1. 저장 버튼 클릭 → updateUser() 서버 함수 호출
@@ -14,7 +14,7 @@ import { useState } from 'react'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { updateUser } from '../../services/user'
 
-export const Route = createFileRoute('/_mypage/profile')({
+export const Route = createFileRoute('/mypage/profile')({
   component: MyProfile,
 })
 

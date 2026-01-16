@@ -1,20 +1,18 @@
 /**
- * _app.tsx - 일반 사용자용 레이아웃 (Pathless Layout)
+ * (app)/_layout.tsx - 일반 사용자용 레이아웃
  *
- * 파일명 앞의 '_'는 URL에 영향을 주지 않는 레이아웃을 의미합니다.
- * - _app/dashboard.tsx → /dashboard (O)
- * - _app/dashboard.tsx → /app/dashboard (X)
- *
- * 이 레이아웃 아래의 모든 페이지는 이 레이아웃을 공유합니다.
+ * Route Group: (app) - URL에 포함되지 않음
+ * - dashboard.tsx → /dashboard
+ * - my-profile.tsx → /my-profile
  *
  * loader: App 진입 시 앱 정보를 가져옴 (3초 딜레이 시뮬레이션)
  * pendingComponent: loader 실행 중 표시되는 로딩 UI
  */
 
 import { Outlet, createFileRoute } from '@tanstack/react-router'
-import { getAppInfo } from '../services/appConfig'
+import { getAppInfo } from '../../services/appConfig'
 
-export const Route = createFileRoute('/_app')({
+export const Route = createFileRoute('/(app)/_layout')({
   loader: async () => {
     const appInfo = await getAppInfo()
     return { appInfo }

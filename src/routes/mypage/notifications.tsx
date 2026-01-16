@@ -1,13 +1,13 @@
 /**
- * _mypage/notifications.tsx - 알림 설정 페이지
+ * mypage/notifications.tsx - 알림 설정 페이지
  *
  * URL: /mypage/notifications
- * 레이아웃: _mypage.tsx의 MypageLayout이 적용됨
+ * 레이아웃: mypage/_layout.tsx가 적용됨
  */
 
 import { createFileRoute } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/_mypage/notifications')({
+export const Route = createFileRoute('/mypage/notifications')({
   component: MyNotifications,
 })
 

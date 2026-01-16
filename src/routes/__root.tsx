@@ -5,15 +5,17 @@
  * - loader: 전역 데이터 (사용자 정보 등)
  * - shellComponent: SSR 시 HTML 문서 구조
  * - component: 공통 레이아웃
+ * - TanStack Query: QueryClientProvider로 감싸서 전역 사용
  */
 
-import { Outlet, HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { Outlet, HeadContent, Scripts, createRootRouteWithContext } from '@tanstack/react-router'
 
 import { Header } from '../components/Header'
 import { getUser } from '../services/user'
 import appCss from '../styles.css?url'
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   loader: async () => {
     const user = await getUser()
     return { user }
@@ -35,12 +37,13 @@ export const Route = createRootRoute({
 
 function RootLayout() {
   const { user } = Route.useLoaderData()
+  const { queryClient } = Route.useRouteContext()
 
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <Header user={user} />
       <Outlet />
-    </>
+    </QueryClientProvider>
   )
 }
 

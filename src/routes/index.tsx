@@ -26,16 +26,16 @@ function DemoHub() {
 
         {/* Demo Sections */}
         <div className="space-y-8">
-          {/* App Area */}
+          {/* App Area - Route Group (app) */}
           <section className="bg-slate-800/50 border border-slate-700 rounded-lg p-6">
             <h2 className="text-cyan-400 font-semibold text-sm uppercase tracking-wide mb-4">
-              App Area
+              App Area (Route Group)
             </h2>
             <div className="space-y-3">
               <DemoLink
                 to="/dashboard"
                 title="/dashboard"
-                hint="상위 라우트(_app)가 레이아웃과 공통 UI를 책임"
+                hint="(app)/_layout.tsx 레이아웃 적용"
               />
             </div>
           </section>
@@ -49,12 +49,17 @@ function DemoHub() {
               <DemoLink
                 to="/mypage/profile"
                 title="/mypage/profile"
-                hint="마이페이지 전용 레이아웃 (사이드바)"
+                hint="mypage/_layout.tsx 레이아웃 적용"
+              />
+              <DemoLink
+                to="/mypage/notifications"
+                title="/mypage/notifications"
+                hint="loader + server function + query 데모"
               />
               <DemoLink
                 to="/mypage/settings"
                 title="/mypage/settings"
-                hint="하위 라우트는 레이아웃 안에서 수정/소비"
+                hint="loader + mutation + query 데모"
               />
             </div>
           </section>
