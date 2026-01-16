@@ -26,16 +26,16 @@ function DemoHub() {
 
         {/* Demo Sections */}
         <div className="space-y-8">
-          {/* App Area - Route Group (app) */}
+          {/* App Area - Pathless Layout */}
           <section className="bg-slate-800/50 border border-slate-700 rounded-lg p-6">
             <h2 className="text-cyan-400 font-semibold text-sm uppercase tracking-wide mb-4">
-              App Area (Route Group)
+              App Area (Pathless Layout)
             </h2>
             <div className="space-y-3">
               <DemoLink
                 to="/dashboard"
                 title="/dashboard"
-                hint="(app)/_layout.tsx 레이아웃 적용"
+                hint="_app.tsx 레이아웃 적용"
               />
             </div>
           </section>
@@ -43,42 +43,18 @@ function DemoHub() {
           {/* My Page Area */}
           <section className="bg-slate-800/50 border border-slate-700 rounded-lg p-6">
             <h2 className="text-orange-400 font-semibold text-sm uppercase tracking-wide mb-4">
-              My Page Area
+              My Page Area (Layout Route)
             </h2>
             <div className="space-y-3">
               <DemoLink
                 to="/mypage/profile"
                 title="/mypage/profile"
-                hint="mypage/_layout.tsx 레이아웃 적용"
-              />
-              <DemoLink
-                to="/mypage/notifications"
-                title="/mypage/notifications"
-                hint="loader + server function + query 데모"
+                hint="mypage.tsx 레이아웃 적용"
               />
               <DemoLink
                 to="/mypage/settings"
                 title="/mypage/settings"
-                hint="loader + mutation + query 데모"
-              />
-            </div>
-          </section>
-
-          {/* Server / Data Flow */}
-          <section className="bg-slate-800/50 border border-slate-700 rounded-lg p-6">
-            <h2 className="text-purple-400 font-semibold text-sm uppercase tracking-wide mb-4">
-              Server / Data Flow
-            </h2>
-            <div className="space-y-3">
-              <DemoLink
-                to="/demo/start/server-funcs"
-                title="/demo/start/server-funcs"
-                hint="라우트 단위로 서버 경계와 로딩이 묶임"
-              />
-              <DemoLink
-                to="/demo/start/ssr"
-                title="/demo/start/ssr"
-                hint="SSR 모드별 데이터 흐름 비교"
+                hint="createServerFn 데모"
               />
             </div>
           </section>

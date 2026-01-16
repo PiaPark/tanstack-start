@@ -9,81 +9,72 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as MypageRouteImport } from './routes/mypage'
+import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MypageSettingsRouteImport } from './routes/mypage/settings'
 import { Route as MypageProfileRouteImport } from './routes/mypage/profile'
-import { Route as MypageNotificationsRouteImport } from './routes/mypage/notifications'
-import { Route as MypageLayoutRouteImport } from './routes/mypage/_layout'
-import { Route as appMyProfileRouteImport } from './routes/(app)/my-profile'
-import { Route as appDashboardRouteImport } from './routes/(app)/dashboard'
-import { Route as appLayoutRouteImport } from './routes/(app)/_layout'
+import { Route as AppMyProfileRouteImport } from './routes/_app/my-profile'
+import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
 
+const MypageRoute = MypageRouteImport.update({
+  id: '/mypage',
+  path: '/mypage',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MypageSettingsRoute = MypageSettingsRouteImport.update({
-  id: '/mypage/settings',
-  path: '/mypage/settings',
-  getParentRoute: () => rootRouteImport,
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => MypageRoute,
 } as any)
 const MypageProfileRoute = MypageProfileRouteImport.update({
-  id: '/mypage/profile',
-  path: '/mypage/profile',
-  getParentRoute: () => rootRouteImport,
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => MypageRoute,
 } as any)
-const MypageNotificationsRoute = MypageNotificationsRouteImport.update({
-  id: '/mypage/notifications',
-  path: '/mypage/notifications',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MypageLayoutRoute = MypageLayoutRouteImport.update({
-  id: '/mypage/_layout',
-  path: '/mypage',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const appMyProfileRoute = appMyProfileRouteImport.update({
-  id: '/(app)/my-profile',
+const AppMyProfileRoute = AppMyProfileRouteImport.update({
+  id: '/my-profile',
   path: '/my-profile',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AppRoute,
 } as any)
-const appDashboardRoute = appDashboardRouteImport.update({
-  id: '/(app)/dashboard',
+const AppDashboardRoute = AppDashboardRouteImport.update({
+  id: '/dashboard',
   path: '/dashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const appLayoutRoute = appLayoutRouteImport.update({
-  id: '/(app)/_layout',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AppRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/dashboard': typeof appDashboardRoute
-  '/my-profile': typeof appMyProfileRoute
-  '/mypage': typeof MypageLayoutRoute
-  '/mypage/notifications': typeof MypageNotificationsRoute
+  '/mypage': typeof MypageRouteWithChildren
+  '/dashboard': typeof AppDashboardRoute
+  '/my-profile': typeof AppMyProfileRoute
   '/mypage/profile': typeof MypageProfileRoute
   '/mypage/settings': typeof MypageSettingsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/dashboard': typeof appDashboardRoute
-  '/my-profile': typeof appMyProfileRoute
-  '/mypage': typeof MypageLayoutRoute
-  '/mypage/notifications': typeof MypageNotificationsRoute
+  '/mypage': typeof MypageRouteWithChildren
+  '/dashboard': typeof AppDashboardRoute
+  '/my-profile': typeof AppMyProfileRoute
   '/mypage/profile': typeof MypageProfileRoute
   '/mypage/settings': typeof MypageSettingsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/(app)/_layout': typeof appLayoutRoute
-  '/(app)/dashboard': typeof appDashboardRoute
-  '/(app)/my-profile': typeof appMyProfileRoute
-  '/mypage/_layout': typeof MypageLayoutRoute
-  '/mypage/notifications': typeof MypageNotificationsRoute
+  '/_app': typeof AppRouteWithChildren
+  '/mypage': typeof MypageRouteWithChildren
+  '/_app/dashboard': typeof AppDashboardRoute
+  '/_app/my-profile': typeof AppMyProfileRoute
   '/mypage/profile': typeof MypageProfileRoute
   '/mypage/settings': typeof MypageSettingsRoute
 }
@@ -91,46 +82,52 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/mypage'
     | '/dashboard'
     | '/my-profile'
-    | '/mypage'
-    | '/mypage/notifications'
     | '/mypage/profile'
     | '/mypage/settings'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/mypage'
     | '/dashboard'
     | '/my-profile'
-    | '/mypage'
-    | '/mypage/notifications'
     | '/mypage/profile'
     | '/mypage/settings'
   id:
     | '__root__'
     | '/'
-    | '/(app)/_layout'
-    | '/(app)/dashboard'
-    | '/(app)/my-profile'
-    | '/mypage/_layout'
-    | '/mypage/notifications'
+    | '/_app'
+    | '/mypage'
+    | '/_app/dashboard'
+    | '/_app/my-profile'
     | '/mypage/profile'
     | '/mypage/settings'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  appLayoutRoute: typeof appLayoutRoute
-  appDashboardRoute: typeof appDashboardRoute
-  appMyProfileRoute: typeof appMyProfileRoute
-  MypageLayoutRoute: typeof MypageLayoutRoute
-  MypageNotificationsRoute: typeof MypageNotificationsRoute
-  MypageProfileRoute: typeof MypageProfileRoute
-  MypageSettingsRoute: typeof MypageSettingsRoute
+  AppRoute: typeof AppRouteWithChildren
+  MypageRoute: typeof MypageRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/mypage': {
+      id: '/mypage'
+      path: '/mypage'
+      fullPath: '/mypage'
+      preLoaderRoute: typeof MypageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -140,65 +137,64 @@ declare module '@tanstack/react-router' {
     }
     '/mypage/settings': {
       id: '/mypage/settings'
-      path: '/mypage/settings'
+      path: '/settings'
       fullPath: '/mypage/settings'
       preLoaderRoute: typeof MypageSettingsRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof MypageRoute
     }
     '/mypage/profile': {
       id: '/mypage/profile'
-      path: '/mypage/profile'
+      path: '/profile'
       fullPath: '/mypage/profile'
       preLoaderRoute: typeof MypageProfileRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof MypageRoute
     }
-    '/mypage/notifications': {
-      id: '/mypage/notifications'
-      path: '/mypage/notifications'
-      fullPath: '/mypage/notifications'
-      preLoaderRoute: typeof MypageNotificationsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mypage/_layout': {
-      id: '/mypage/_layout'
-      path: '/mypage'
-      fullPath: '/mypage'
-      preLoaderRoute: typeof MypageLayoutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(app)/my-profile': {
-      id: '/(app)/my-profile'
+    '/_app/my-profile': {
+      id: '/_app/my-profile'
       path: '/my-profile'
       fullPath: '/my-profile'
-      preLoaderRoute: typeof appMyProfileRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppMyProfileRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/(app)/dashboard': {
-      id: '/(app)/dashboard'
+    '/_app/dashboard': {
+      id: '/_app/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
-      preLoaderRoute: typeof appDashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(app)/_layout': {
-      id: '/(app)/_layout'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof appLayoutRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
     }
   }
 }
 
-const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  appLayoutRoute: appLayoutRoute,
-  appDashboardRoute: appDashboardRoute,
-  appMyProfileRoute: appMyProfileRoute,
-  MypageLayoutRoute: MypageLayoutRoute,
-  MypageNotificationsRoute: MypageNotificationsRoute,
+interface AppRouteChildren {
+  AppDashboardRoute: typeof AppDashboardRoute
+  AppMyProfileRoute: typeof AppMyProfileRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppDashboardRoute: AppDashboardRoute,
+  AppMyProfileRoute: AppMyProfileRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
+interface MypageRouteChildren {
+  MypageProfileRoute: typeof MypageProfileRoute
+  MypageSettingsRoute: typeof MypageSettingsRoute
+}
+
+const MypageRouteChildren: MypageRouteChildren = {
   MypageProfileRoute: MypageProfileRoute,
   MypageSettingsRoute: MypageSettingsRoute,
+}
+
+const MypageRouteWithChildren =
+  MypageRoute._addFileChildren(MypageRouteChildren)
+
+const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
+  MypageRoute: MypageRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

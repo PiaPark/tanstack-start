@@ -1,163 +1,148 @@
 /**
- * mypage/settings.tsx - 설정 페이지
+ * mypage/settings.tsx - Server Function 데모
  *
  * URL: /mypage/settings
  *
- * 데이터 흐름 데모:
- * 1. loader: SSR 시 초기 설정 데이터 로드 (서버에서 실행)
- * 2. server function: 설정 저장 (서버에서 실행)
- * 3. TanStack Query: 클라이언트에서 알림 목록 fetch (세밀한 캐시 제어)
+ * createServerFn 데모:
+ * - 클라이언트에서 서버 함수를 호출하면 자동으로 HTTP 요청으로 변환됨
+ * - Network 탭에서 /_server 요청 확인 가능
  */
 
-import { createFileRoute } from '@tanstack/react-router'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import {
-  getSettings,
-  updateSettings,
-  getNotifications,
-} from '../../services/settings'
+import { useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { getSettings, updateSettings } from "../../services/settings";
 
-export const Route = createFileRoute('/mypage/settings')({
-  // 1. loader: 페이지 진입 시 서버에서 실행
-  loader: async () => {
-    const settings = await getSettings()
-    return { settings }
-  },
+export const Route = createFileRoute("/mypage/settings")({
   component: SettingsPage,
-})
+});
+
+type Settings = {
+  theme: "dark" | "light";
+  language: string;
+  notificationEnabled: boolean;
+};
 
 function SettingsPage() {
-  const { settings } = Route.useLoaderData()
-  const queryClient = useQueryClient()
+  const [result, setResult] = useState<Settings | null>(null);
+  const [loadingGet, setLoadingGet] = useState(false);
+  const [loadingUpdate, setLoadingUpdate] = useState(false);
 
-  // 3. TanStack Query: 알림 목록 (클라이언트에서 fetch, 캐시 제어)
-  const {
-    data: notifications,
-    isLoading,
-    refetch,
-  } = useQuery({
-    queryKey: ['notifications'],
-    queryFn: () => getNotifications(),
-    staleTime: 1000 * 30, // 30초간 fresh
-  })
+  // 서버 함수 직접 호출 (GET)
+  const handleGet = async () => {
+    setLoadingGet(true);
+    const data = await getSettings();
+    setResult(data);
+    setLoadingGet(false);
+  };
 
-  // 2. server function mutation: 설정 저장
-  const mutation = useMutation({
-    mutationFn: updateSettings,
-    onSuccess: () => {
-      // 특정 쿼리만 갱신 (loader 전체 재실행 없이)
-      queryClient.invalidateQueries({ queryKey: ['notifications'] })
-    },
-  })
+  // 서버 함수 직접 호출 (POST) - 테마 토글
+  const handleToggleTheme = async () => {
+    setLoadingUpdate(true);
+    // 현재 값의 반대로 토글
+    const currentTheme = result?.theme ?? "dark";
+    const newTheme = currentTheme === "dark" ? "light" : "dark";
 
-  const handleToggleNotification = () => {
-    mutation.mutate({
+    const data = await updateSettings({
       data: {
-        ...settings,
-        notificationEnabled: !settings.notificationEnabled,
+        theme: newTheme,
+        language: result?.language ?? "ko",
+        notificationEnabled: result?.notificationEnabled ?? true,
       },
-    })
-  }
+    });
+    setResult(data);
+    setLoadingUpdate(false);
+  };
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-white mb-6">설정</h1>
+      <h1 className="text-3xl font-bold text-white mb-6">createServerFn 데모</h1>
 
-      {/* loader 데이터 (SSR) */}
+      {/* 설명 */}
       <section className="bg-slate-800 rounded-lg p-6 border border-slate-700 mb-6">
-        <h2 className="text-cyan-400 font-semibold text-sm uppercase tracking-wide mb-4">
-          1. Loader (SSR)
-        </h2>
-        <p className="text-gray-400 text-sm mb-3">
-          페이지 진입 시 서버에서 로드됨
+        <p className="text-gray-300 text-sm mb-4">
+          <code className="text-green-400">createServerFn</code>으로 만든 함수는
+          클라이언트에서 호출해도 <strong>자동으로 HTTP 요청</strong>으로
+          변환됩니다.
         </p>
-        <div className="bg-slate-900 rounded p-3">
-          <pre className="text-gray-300 text-sm">
-            {JSON.stringify(settings, null, 2)}
+        <div className="bg-slate-900 rounded p-3 mb-4">
+          <pre className="text-xs text-gray-400 overflow-x-auto">
+            {`// services/settings.ts
+export const getSettings = createServerFn({ method: 'GET' })
+  .handler(async () => {
+    // 이 코드는 서버에서만 실행됨
+    return { theme: 'dark', notificationEnabled: true }
+  })`}
           </pre>
         </div>
+        <p className="text-gray-500 text-xs">
+          버튼을 클릭하고 Network 탭에서 <code>/_server</code> 요청을
+          확인해보세요.
+        </p>
       </section>
 
-      {/* server function mutation */}
+      {/* 버튼들 */}
       <section className="bg-slate-800 rounded-lg p-6 border border-slate-700 mb-6">
-        <h2 className="text-orange-400 font-semibold text-sm uppercase tracking-wide mb-4">
-          2. Server Function (Mutation)
-        </h2>
-        <p className="text-gray-400 text-sm mb-3">
-          버튼 클릭 시 서버 함수 호출
-        </p>
-        <button
-          onClick={handleToggleNotification}
-          disabled={mutation.isPending}
-          className="bg-orange-500 hover:bg-orange-600 disabled:bg-orange-500/50 text-white px-4 py-2 rounded-lg transition-colors"
-        >
-          {mutation.isPending
-            ? '저장 중...'
-            : `알림 ${settings.notificationEnabled ? '끄기' : '켜기'}`}
-        </button>
-        {mutation.isSuccess && (
-          <span className="ml-3 text-green-400 text-sm">저장됨!</span>
+        <div className="flex gap-3 mb-4">
+          <button
+            onClick={handleGet}
+            disabled={loadingGet}
+            className="bg-cyan-500 hover:bg-cyan-600 disabled:bg-cyan-500/50 text-white px-4 py-2 rounded-lg transition-colors"
+          >
+            {loadingGet ? "로딩..." : "getSettings() (GET)"}
+          </button>
+          <button
+            onClick={handleToggleTheme}
+            disabled={loadingUpdate}
+            className="bg-orange-500 hover:bg-orange-600 disabled:bg-orange-500/50 text-white px-4 py-2 rounded-lg transition-colors"
+          >
+            {loadingUpdate
+              ? "로딩..."
+              : `테마 변경 (POST) → ${result?.theme === "dark" ? "light" : "dark"}`}
+          </button>
+        </div>
+
+        {/* 결과 */}
+        {result && (
+          <div>
+            <p className="text-green-400 text-sm mb-2">서버 응답:</p>
+            <div className="bg-slate-900 rounded p-3">
+              <pre className="text-gray-300 text-sm">
+                {JSON.stringify(result, null, 2)}
+              </pre>
+            </div>
+          </div>
         )}
       </section>
 
-      {/* TanStack Query */}
-      <section className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-        <h2 className="text-purple-400 font-semibold text-sm uppercase tracking-wide mb-4">
-          3. TanStack Query (Client Fetch)
-        </h2>
-        <p className="text-gray-400 text-sm mb-3">
-          클라이언트에서 fetch, 30초 캐시
-        </p>
-        <div className="flex items-center gap-3 mb-4">
-          <button
-            onClick={() => refetch()}
-            className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors text-sm"
-          >
-            새로고침
-          </button>
-          <span className="text-gray-500 text-xs">
-            (loader 재실행 없이 이 쿼리만 갱신)
-          </span>
-        </div>
-        <div className="bg-slate-900 rounded p-3">
-          {isLoading ? (
-            <p className="text-gray-500">로딩 중...</p>
-          ) : (
-            <ul className="space-y-2">
-              {notifications?.map((n) => (
-                <li
-                  key={n.id}
-                  className="text-gray-300 text-sm flex items-center gap-2"
-                >
-                  <span
-                    className={`w-2 h-2 rounded-full ${n.read ? 'bg-gray-600' : 'bg-cyan-400'}`}
-                  />
-                  {n.message}
-                </li>
-              ))}
-            </ul>
-          )}
+      {/* Network 탭 가이드 */}
+      <section className="bg-slate-800/50 rounded-lg p-6 border border-cyan-500/30">
+        <h2 className="text-cyan-400 font-semibold mb-4">Network 탭에서 확인하세요</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-slate-900 rounded p-4">
+            <div className="text-xs text-gray-500 mb-1">1. 요청 URL</div>
+            <code className="text-yellow-400 text-sm">/_server/...</code>
+            <p className="text-gray-500 text-xs mt-1">자동 생성된 서버 함수 엔드포인트</p>
+          </div>
+          <div className="bg-slate-900 rounded p-4">
+            <div className="text-xs text-gray-500 mb-1">2. 요청 메서드</div>
+            <div className="flex gap-2">
+              <span className="bg-cyan-500/20 text-cyan-400 px-2 py-0.5 rounded text-xs">GET</span>
+              <span className="bg-orange-500/20 text-orange-400 px-2 py-0.5 rounded text-xs">POST</span>
+            </div>
+            <p className="text-gray-500 text-xs mt-1">createServerFn의 method 옵션대로</p>
+          </div>
+          <div className="bg-slate-900 rounded p-4">
+            <div className="text-xs text-gray-500 mb-1">3. 응답 탭</div>
+            <code className="text-green-400 text-sm">{'{ "theme": "dark", ... }'}</code>
+            <p className="text-gray-500 text-xs mt-1">순수 JSON 데이터 반환</p>
+          </div>
+          <div className="bg-slate-900 rounded p-4">
+            <div className="text-xs text-gray-500 mb-1">4. 핵심 포인트</div>
+            <p className="text-purple-400 text-sm">fetch 없이 함수 호출만!</p>
+            <p className="text-gray-500 text-xs mt-1">RPC 스타일 서버 통신</p>
+          </div>
         </div>
       </section>
-
-      {/* 발표자용 힌트 */}
-      <div className="mt-8 p-4 border border-dashed border-gray-700 rounded-lg">
-        <p className="text-gray-500 text-sm mb-2">💡 데이터 흐름 비교:</p>
-        <ul className="text-gray-600 text-xs space-y-1">
-          <li>
-            • <code className="text-cyan-400">loader</code>: SSR, 전체 페이지
-            단위
-          </li>
-          <li>
-            • <code className="text-orange-400">server function</code>: 서버
-            실행, 직접 호출
-          </li>
-          <li>
-            • <code className="text-purple-400">TanStack Query</code>: 클라이언트
-            fetch, 세밀한 캐시 제어
-          </li>
-        </ul>
-      </div>
     </div>
-  )
+  );
 }

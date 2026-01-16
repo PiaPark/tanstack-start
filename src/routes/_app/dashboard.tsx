@@ -1,13 +1,13 @@
 /**
- * (app)/dashboard.tsx - 대시보드 페이지
+ * _app/dashboard.tsx - 대시보드 페이지
  *
  * URL: /dashboard
- * 레이아웃: (app)/_layout.tsx가 적용됨
+ * 레이아웃: _app.tsx가 적용됨 (Pathless Layout Route)
  */
 
 import { createFileRoute } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/(app)/dashboard')({
+export const Route = createFileRoute('/_app/dashboard')({
   component: Dashboard,
 })
 

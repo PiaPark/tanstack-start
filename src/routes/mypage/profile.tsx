@@ -2,7 +2,7 @@
  * mypage/profile.tsx - 내 프로필 페이지
  *
  * URL: /mypage/profile
- * 레이아웃: mypage/_layout.tsx가 적용됨
+ * 레이아웃: mypage.tsx가 적용됨 (Layout Route)
  *
  * 데이터 갱신 흐름:
  * 1. 저장 버튼 클릭 → updateUser() 서버 함수 호출
